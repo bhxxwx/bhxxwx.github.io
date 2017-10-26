@@ -13,7 +13,6 @@ document.onkeydown = function(e){
 function inst() {
 if ($("name")!=null) $("name").value = $("tishi1").innerHTML;
 if ($("code")!=null) $("code").value = $("tishi4").innerHTML;
-if ($("xh")!=null) $("xh").value = $("tishi4").innerHTML;
 }
  
 function preview() 
@@ -59,15 +58,6 @@ $('33').style.borderColor='red';
 return false;
 }else{
 $('33').style.borderColor='green';
-}
-}
-if(Num == 4 || Num == 0){
-if (!$("xh").value.match(/^[0-9]{4}$/)){
-$("xh").value = $("tishi4").innerHTML;
-$('44').style.borderColor='red';
-return false;
-}else{
-$('44').style.borderColor='green';
 }
 }
 if(Num == "0"){
