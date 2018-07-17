@@ -24,7 +24,7 @@ void pwm_12 (int x,int y);                  // x-->½«¶¨Ê±Æ÷A0²¶×½/±È½Ï0¼Ä´æÆ÷ÖÐµ
 void interrupt_d (int x,int y,int p);       // Px.yºÅÒý½Å¿ªÆôÏÂ½µÑØÖÐ¶Ï;  p-->0 pull dowm;p-->1 pull up
 void interrupt_u (int x,int y,int p);       // Px.yºÅÒý½Å¿ªÆôÉÏÉýÑØÖÐ¶Ï;  p-->0 pull dowm;p-->1 pull up
 void pwm (int T,int Ton ,int x,int y);      // T-->ÖÜÆÚ;  Ton-->ÉèÖÃÕ¼¿Õ±È£¬¸ßµçÆ½ËùÕ¼Ê±¼ä;  Êä³öÒý½ÅÎªPx.y  ;P1.1~1.5 ; P1.7 ; p2.0
-void adc_60 (int x,int y);                  // ÉèÖÃADC £¬Ä¬ÈÏÒý½ÅÎªP6.0 £¬³õÊ¼ÏÔÊ¾×ø±êÎª(X,Y) £¬µ¥Í¨µÀµ¥´Î/Ñ­»·²ÉÑù¿ÉÑ¡
+void adc_60 ();                  // ÉèÖÃADC £¬Ä¬ÈÏÒý½ÅÎªP6.0 £¬µ¥Í¨µÀµ¥´Î/Ñ­»·²ÉÑù¿ÉÑ¡
 
 
 #endif /* ARDUINO_H_ */

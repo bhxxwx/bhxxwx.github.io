@@ -156,7 +156,7 @@ void pwm (int T,int Ton,int x,int y)    //P1.1~1.5 ; P1.7 ; p2.0
     }
 }
 
-void adc_60 (int x,int y)                      // ADC需要配合ADC中断使用，在main函数下方声明 - #pragma vector=ADC12_VECTOR - __interrupt void ADC18 (void)
+void adc_60 ()                      // ADC需要配合ADC中断使用，在main函数下方声明 - #pragma vector=ADC12_VECTOR - __interrupt void ADC18 (void)
 {
     IIC_ioinit();
     LCD_Init();
