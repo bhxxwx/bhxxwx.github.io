@@ -107,8 +107,13 @@ void pwm (int T,int Ton,int x,int y)    //P1.1~1.5 ; P1.7 ; p2.0
     case 2:{
         P2DIR |= (1<<y);
         P2SEL |= (1<<y);
-        TA0CCR1 = T;
+        TA1CCR0 = T;
         }break;
+    case 3:{                            //加入TimerB0,方便以后扩展PWM口
+            P3DIR |= (1<<y);
+            P3SEL |= (1<<y);
+            TB0CCR0 = T;
+            }break;
     }
     switch (y)
     {
@@ -138,14 +143,14 @@ void pwm (int T,int Ton,int x,int y)    //P1.1~1.5 ; P1.7 ; p2.0
             TA0CTL = TASSEL_2 + MC_1;
             }break;
     case 7:{
-            TA0CCTL0 = OUTMOD_7;
-            TA0CCR0 = Ton;
-            TA0CTL = TASSEL_2 + MC_1;
+            TA1CCTL0 = OUTMOD_7;
+            TA1CCR0 = Ton;
+            TA1CTL = TASSEL_2 + MC_1;
             }break;
     case 0:{
-            TA0CCTL1 = OUTMOD_7;
-            TA0CCR1 = Ton;
-            TA0CTL = TASSEL_2 + MC_1;
+            TA1CCTL1 = OUTMOD_7;
+            TA1CCR1 = Ton;
+            TA1CTL = TASSEL_2 + MC_1;
             }break;
 
     }
