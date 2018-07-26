@@ -1,0 +1,35 @@
+<Arduino.h>	User Guide
+	1、本库函数包含以下函数：
+		void pinMode(int p ,int m);                 // 基本I/O操作，引脚模式设置
+		void digitalWrite(int i,int x);				// 引脚电平设置
+		void digitalRead(int P, int M);				// 引脚电平读取（有bug未修复）
+		void print (int x,int y,long i);            // 初始坐标为（x,y），显示数据为i;  y--> 1~7;OLED display
+		void pwm_12 (int x,int y);                  // x-->将周期设置为 X us;   y-->设置占空比，高电平所占时间
+		void interrupt_d (int x,int y,int p);       // Px.y号引脚开启下降沿中断;  p-->0 pull dowm;p-->1 pull up
+		void interrupt_u (int x,int y,int p);       // Px.y号引脚开启上升沿中断;  p-->0 pull dowm;p-->1 pull up
+		void pwm (int T,int Ton ,int x,int y);      // T-->周期;  Ton-->设置占空比，高电平所占时间;  输出引脚见下文
+		void adc_60 (int x,int y);                  // 设置ADC ，默认引脚为P6.0 ，初始显示坐标为(X,Y) ，单通道单次/循环采样可选
+	2、函数使用注意事项：
+			（1）、pwm_12 (int x,int y); 输出pwm为P1.2引脚；
+			（2）、interrupt_d (int x,int y,int p) 中断函数需要配合中断使用，格式如下：
+				#pragma vector = PORT1_VECTOR
+				__interrupt void port1(void)
+				{
+					P1IFG &=~BIT3;  //清中断标志位
+					__delay_cycles(800);
+					P2DIR = (0<<2);
+					P2REN |= BIT2;                  //使能上\下拉电阻
+					P2OUT |= BIT2;                  //引脚拉高
+					if (w<=4)
+                    {
+                        w=5;
+                    }
+
+					if (P2IN & BIT2)
+						w++;
+					else
+						w--;
+				}	
+			（3）、pwm (int T,int Ton ,int x,int y);使用示范为：pwm (1000,300,2,1);P2.1输出周期为1000us，高电平时间300us的pwm波
+			该函数支持的引脚有：P1.2~1.5; P2.0; P2.1; P2.4; P2.5; P3.5; P3.6; P7.4~7.6 ；其中P1.4 1.5为一路互补可带死区输出的PWM；
+			P3.5 3.6为一路互补可带死区输出的PWM

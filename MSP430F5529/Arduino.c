@@ -52,19 +52,19 @@ void interrupt_d (int x,int y,int p)    //需要配合中断使用，在main函数下方声明 -
     {
     case 1:{
             P1DIR &=~(1<<y);            //设置P1.y为输入
-            P1REN |= (1<<y);            //使能上/下拉
             P1OUT = (p<<y);             //p=0->下拉
+            P1REN |= (1<<y);            //设为输入时必须加上此寄存器配置
             P1IE  |= (1<<y);            //打开P1.y口中断
             P1IES &=~(1<<y);            //触发方式为下降沿
-            P1IFG &=~(1<<y);            //清中断标志位
+            P1IFG &=~(1<<5);            //清中断标志位
             }break;
     case 2:{
             P2DIR &=~(1<<y);            //设置P2.y为输入
-            P2REN |= (1<<y);            //使能上/下拉
             P2OUT = (p<<y);             //p=0->下拉
+            P2REN |= (1<<y);            //设为输入时必须加上此寄存器配置
             P2IE  |= (1<<y);            //打开P2.y口中断
             P2IES &=~(1<<y);            //触发方式为下降沿
-            P2IFG &=~(1<<y);            //清中断标志位
+            P2IFG &=~(1<<5);            //清中断标志位
             }break;
 
     }
@@ -77,86 +77,57 @@ void interrupt_u (int x,int y,int p)
     {
     case 1:{
             P1DIR &=~(1<<y);            //设置P1.y为输入
-            P1REN |= (1<<y);            //使能上/下拉
             P1OUT = (p<<y);             //p=0->下拉
+            P1REN |= (1<<y);            //设为输入时必须加上此寄存器配置
             P1IE  |= (1<<y);            //打开P1.y口中断
-            P1IES &=~(0<<y);            //触发方式为上升沿
-            P1IFG &=~(1<<y);            //清中断标志位
+            P1IES &=~(0<<y);            //触发方式为下降沿
+            P1IFG &=~(1<<5);            //清中断标志位
             }break;
     case 2:{
             P2DIR &=~(1<<y);            //设置P2.y为输入
-            P2REN |= (1<<y);            //使能上/下拉
             P2OUT = (p<<y);             //p=0->下拉
+            P2REN |= (1<<y);            //设为输入时必须加上此寄存器配置
             P2IE  |= (1<<y);            //打开P2.y口中断
-            P2IES &=~(0<<y);            //触发方式为上升沿
-            P2IFG &=~(1<<y);            //清中断标志位
+            P2IES &=~(0<<y);            //触发方式为下降沿
+            P2IFG &=~(1<<5);            //清中断标志位
             }break;
 
     }
 }
 
-void pwm (int T,int Ton,int x,int y)    //P1.1~1.5 ; P1.7 ; p2.0
+void pwm (int T,int Ton,int x,int y)    //P1.2~1.5; P2.0; P2.1; P2.4; P2.5; P3.5; P3.6; P7.4~7.6
 {
     switch (x)
     {
     case 1:{
         P1DIR |= (1<<y);                //设置引脚 P1.y 为输出模式
         P1SEL |= (1<<y);                //设置引脚 P1.y 作为 PWM 输出.
-        TA0CCR0 = T;                    //设置定时器 A0 周期为 T us.
+        //TA0CCR0 = T;                    //设置定时器 A0 周期为 T us.
+        pwm1_y(T,Ton,y);
         }break;
     case 2:{
         P2DIR |= (1<<y);
         P2SEL |= (1<<y);
-        TA1CCR0 = T;
+        //TA0CCR1 = T;
+        pwm2_y(T,Ton,y);
         }break;
-    case 3:{                            //加入TimerB0,方便以后扩展PWM口
-            P3DIR |= (1<<y);
-            P3SEL |= (1<<y);
-            TB0CCR0 = T;
-            }break;
-    }
-    switch (y)
-    {
-    case 1:{
-            TA0CCTL0 = OUTMOD_7;
-            TA0CCR0 = Ton;
-            TA0CTL = TASSEL_2 + MC_1;
-            }break;
-    case 2:{
-            TA0CCTL1 = OUTMOD_7;
-            TA0CCR1 = Ton;
-            TA0CTL = TASSEL_2 + MC_1;
-            }break;
     case 3:{
-            TA0CCTL2 = OUTMOD_7;
-            TA0CCR2 = Ton;
-            TA0CTL = TASSEL_2 + MC_1;
-            }break;
-    case 4:{
-            TA0CCTL3 = OUTMOD_7;
-            TA0CCR3 = Ton;
-            TA0CTL = TASSEL_2 + MC_1;
-            }break;
-    case 5:{
-            TA0CCTL4 = OUTMOD_7;
-            TA0CCR4 = Ton;
-            TA0CTL = TASSEL_2 + MC_1;
-            }break;
+        P3DIR |= (1<<y);
+        P3SEL |= (1<<y);
+        //TA0CCR1 = T;
+        pwm3_y(T,Ton,y);
+        }break;
     case 7:{
-            TA1CCTL0 = OUTMOD_7;
-            TA1CCR0 = Ton;
-            TA1CTL = TASSEL_2 + MC_1;
-            }break;
-    case 0:{
-            TA1CCTL1 = OUTMOD_7;
-            TA1CCR1 = Ton;
-            TA1CTL = TASSEL_2 + MC_1;
-            }break;
-
+        P7DIR |= (1<<y);
+        P7SEL |= (1<<y);
+        //TA0CCR1 = T;
+        pwm7_y(T,Ton,y);
+        }break;
     }
+
 }
 
-void adc_60 ()                      // ADC需要配合ADC中断使用，在main函数下方声明 - #pragma vector=ADC12_VECTOR - __interrupt void ADC18 (void)
+void adc_60 (int x,int y)                      // ADC需要配合ADC中断使用，在main函数下方声明 - #pragma vector=ADC12_VECTOR - __interrupt void ADC18 (void)
 {
     IIC_ioinit();
     LCD_Init();
@@ -244,4 +215,106 @@ void digitalRead(int P, int M)
     y = P % 10;
     PxIN(x,M,y);
 }
+void pwm1_y(int T,int Ton,int y)
+{
+    switch (y)
+    {
+         case 2:{
+             TA0CCR0 = T;
+             TA0CCTL1 = OUTMOD_7;
+             TA0CCR1 = Ton;
+             TA0CTL = TASSEL_2 + MC_1;
+             }break;
+         case 3:{
+             TA0CCR0 = T;
+             TA0CCTL2 = OUTMOD_7;
+             TA0CCR2 = Ton;
+             TA0CTL = TASSEL_2 + MC_1;
+             }break;
+         case 4:{                               //P1.4 1.5为一路互补可带死区输出的PWM
+             TA0CCR0 = T;
+             TA0CCTL3 = OUTMOD_2;
+             TA0CCR3 = Ton;
+             TA0CTL = TASSEL_2 + MC_3;
+             }break;
+         case 5:{
+              TA0CCR0 = T;
+              TA0CCTL4 = OUTMOD_6;
+              TA0CCR4 = Ton;
+              TA0CTL = TASSEL_2 + MC_3;
+              }break;
+        }
+}
+void pwm2_y(int T,int Ton,int y)
+{
+    switch (y)
+    {
+         case 0:{
+              TA1CCR0 = T;
+              TA1CCTL1 = OUTMOD_7;
+              TA1CCR1 = Ton;
+              TA1CTL = TASSEL_2 + MC_1;
+              }break;
+         case 1:{
+              TA1CCR0 = T;
+              TA1CCTL2 = OUTMOD_7;
+              TA1CCR2 = Ton;
+              TA1CTL = TASSEL_2 + MC_1;
+              }break;
+         case 4:{
+              TA2CCR0 = T;
+              TA2CCTL1 = OUTMOD_7;
+              TA2CCR1 = Ton;
+              TA2CTL = TASSEL_2 + MC_1;
+              }break;
+         case 5:{
+              TA2CCR2 = T;
+              TA2CCTL2 = OUTMOD_7;
+              TA2CCR2 = Ton;
+              TA2CTL = TASSEL_2 + MC_1;
+              }break;
+        }
+}
+void pwm3_y(int T,int Ton,int y)
+{
+    switch (y)
+    {
+         case 5:{                               //P3.5 3.6为一路互补可带死区输出的PWM
+              TB0CCR0 = T;
+              TB0CCTL5 = OUTMOD_2;
+              TB0CCR5 = Ton;
+              TB0CTL = TASSEL_2 + MC_3;
+              }break;
+         case 6:{
+              TB0CCR0 = T;
+              TB0CCTL6 = OUTMOD_6;
+              TB0CCR6 = Ton;
+              TB0CTL = TASSEL_2 + MC_3;
+              }break;
 
+    }
+}
+void pwm7_y(int T,int Ton,int y)
+{
+    switch (y)
+    {
+        case 4:{
+              TB0CCR0 = T;
+              TB0CCTL2 = OUTMOD_7;
+              TB0CCR2 = Ton;
+              TB0CTL = TASSEL_2 + MC_1;
+              }break;
+        case 5:{
+              TB0CCR0 = T;
+              TB0CCTL3 = OUTMOD_7;
+              TB0CCR3 = Ton;
+              TB0CTL = TASSEL_2 + MC_1;
+              }break;
+         case 6:{
+              TB0CCR0 = T;
+              TB0CCTL4 = OUTMOD_7;
+              TB0CCR4 = Ton;
+              TB0CTL = TASSEL_2 + MC_1;
+              }break;
+    }
+}
