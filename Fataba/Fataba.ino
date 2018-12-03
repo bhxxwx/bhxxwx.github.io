@@ -120,8 +120,9 @@ uint16_t MiRAM[5] = {0, 0, 0, 0, 0};
 
 static int choosemenu = 1; //中断计数
 
-static byte p = 0, r = 0;                 //用于NETWORK转盘，圆盘单次执行计数
+static byte p = 0, r = 0, statusvfd = 1;  //p,r->用于NETWORK转盘，圆盘单次执行计数;statusvfd->vfd状态指示，1为开
 static int state[6] = {0, 1, 0, 0, 0, 0}; //用于程序切换
+static int runhours = 0, runminutes = 0;  //程序运行时间储存
 
 void pt6331_Init(unsigned char dispMode, unsigned char dispCtrl);
 
@@ -176,6 +177,47 @@ void adc12();
 void adc13();
 void adc14();
 void adc15();
+void closetime();  //定时关机
+void openvfd();    //中断程序2，关机、开机
+void getruntime(); //计时开始
+
+void getruntime()
+{
+    DateTime now = RTC.now();
+    runhours = now.hour();
+    runminutes = now.minute();
+}
+void openvfd()
+{
+    
+    for (int i = 0; i < 30000;)
+    {
+        i++;
+    }
+    if (statusvfd) //检测当前状态
+    {
+        digitalWrite(EN_PIN, LOW);
+        statusvfd = 0;
+    }
+    else
+    {
+        digitalWrite(EN_PIN, HIGH);
+        statusvfd = 1;
+    }
+}
+void closetime()
+{
+    DateTime now = RTC.now();
+    int h, m;
+    h = now.hour();
+    m = now.minute();
+    if ((h - runhours) == 1) //定时为1小时
+        if (m == runminutes)
+        {
+            digitalWrite(EN_PIN, LOW);
+            statusvfd = 0; //状态标识
+        }
+}
 
 void adc11()
 {
@@ -273,7 +315,7 @@ void adc15()
         pt6331_WriteDisplayRam(25, &lig[0], 1);
 }
 
-void tworoundstep()
+void tworoundstep() //圆盘双部单步执行
 {
     pt6331_WriteDisplayRam(24, &SecdTab[r], 1);
     r++;
@@ -281,14 +323,14 @@ void tworoundstep()
         r = 0;
 }
 
-void getdate()
+void getdate() //获得并显示日期
 {
     DateTime now = RTC.now();
     int h, m, s;
     h = now.year() - 2000;
     m = now.month();
     s = now.day();
-    Serial.println(h);
+    //Serial.println(h);
     diaplayNumber(0, h / 10, ON);
     diaplayNumber(1, h % 10, ON);
     diaplayNumber(2, m / 10, ON);
@@ -376,8 +418,10 @@ void temper() //温度显示程序
     //displayCH();
     displayTITLE();
     //showREC(13);
+    getruntime();
     while (state[3])
     {
+
         if (millis() % 1000 == 0)
         {
             showTEMPER();
@@ -387,6 +431,7 @@ void temper() //温度显示程序
             //displayROUNDstep();
             tworoundstep();
             displayRanBOX();
+            closetime();
         }
     }
 }
@@ -406,6 +451,7 @@ void humidity() //湿度显示程序
     //displayCH();
     displayTITLE();
     //showREC(14);
+    getruntime();
     while (state[4])
     {
         if (millis() % 1000 == 0)
@@ -417,6 +463,7 @@ void humidity() //湿度显示程序
             //displayROUNDstep();
             tworoundstep();
             displayRanBOX();
+            closetime();
         }
     }
 }
@@ -436,6 +483,7 @@ void datas() //日期显示程序
     //displayCH();
     displayTITLE();
     //showREC(15);
+    getruntime();
     while (state[5])
     {
         if (millis() % 1000 == 0)
@@ -446,6 +494,7 @@ void datas() //日期显示程序
             displayNETround();
             displayROUNDstep();
             displayRanBOX();
+            closetime();
         }
         if (millis() % 5000 == 0)
         {
@@ -477,6 +526,7 @@ void AutoMod() //自动模式
     displayCH();
     displayTITLE();
     //showREC(11);
+    getruntime();
     while (state[1])
     {
         if (millis() % 1000 == 0)
@@ -487,6 +537,7 @@ void AutoMod() //自动模式
             displayNETround();
             displayROUNDstep();
             displayRanBOX();
+            closetime();
         }
         if (millis() % 10000 == 0)
         {
@@ -544,7 +595,7 @@ void showTIME() //显示时间
     diaplayNumber(4, s / 10, ON);
     diaplayNumber(5, s % 10, ON);
 }
-void showREC(byte choose)
+void showREC(byte choose) //函数基本弃用->显示HDD,REC,DVD,....;改用adc_()
 {
     unsigned char data = 0X00;
     switch (choose)
@@ -632,43 +683,43 @@ void displayBOXDOWN(unsigned char locat) //矩阵方块下半部分
 {
     pt6331_WriteDisplayRam(27, &locat, 1);
 }
-void displayCHP()
+void displayCHP() //CHP
 {
     unsigned char n = 0x01;
     pt6331_WriteDisplayRam(8, &n, 1);
 }
-void displayTRK()
+void displayTRK() //TRK
 {
     unsigned char n = 0x01;
     pt6331_WriteDisplayRam(5, &n, 1);
 }
-void displayEPG()
+void displayEPG() //EPG
 {
     unsigned char n = 0x01;
     pt6331_WriteDisplayRam(23, &n, 1);
 }
-void displayTRANS()
+void displayTRANS() //TRANS
 {
     unsigned char n = 0x01;
     pt6331_WriteDisplayRam(17, &n, 1);
 }
-void displayMAIL()
+void displayMAIL() //MAIL
 {
     unsigned char n = 0x01;
     pt6331_WriteDisplayRam(32, &n, 1);
 }
-void displayRATE()
+void displayRATE() //RATE
 {
     unsigned char n = 0x01;
     pt6331_WriteDisplayRam(11, &n, 1);
 }
-void displayTITLE()
+void displayTITLE() //TITLE
 {
     unsigned char n3;
     n3 = 0x01;
     pt6331_WriteDisplayRam(14, &n3, 1);
 }
-void displayAUTO()
+void displayAUTO() //AUTO
 {
     unsigned char n = 0x01;
     pt6331_WriteDisplayRam(20, &n, 1);
@@ -723,6 +774,7 @@ void show() //示例程序->时间显示程序
     displayCH();
     displayTITLE();
     //showREC(12);
+    getruntime();
     while (state[2])
     {
         times = millis();
@@ -735,6 +787,7 @@ void show() //示例程序->时间显示程序
             displayROUNDstep();
             displayRanBOX();
             //adc();
+            closetime();
         }
     }
 }
@@ -1002,7 +1055,9 @@ void setup()
 {
     Serial.begin(9600);
     digitalPinToInterrupt(0);
+    digitalPinToInterrupt(1);
     attachInterrupt(0, CHOOSE, RISING);
+    attachInterrupt(1, openvfd, RISING);
     Wire.begin();
     pinMode(DIN_PIN, OUTPUT);
     pinMode(CLK_PIN, OUTPUT);
