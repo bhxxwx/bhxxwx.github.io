@@ -15,6 +15,6 @@
 实物图详见PICS文件夹
 
 VFD时钟采用ATMEGA 328P单片机，原理图与PCB请联系作者。
-																									Build by Wangxiang
-																									2018-12-3
-																									QQ:1779660078
+																			Build by Wangxiang
+																			2018-12-3
+																			QQ:1779660078
