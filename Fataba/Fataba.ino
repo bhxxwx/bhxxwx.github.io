@@ -120,9 +120,9 @@ uint16_t MiRAM[5] = {0, 0, 0, 0, 0};
 
 static int choosemenu = 1; //中断计数
 
-static byte p = 0, r = 0, statusvfd = 1;  //p,r->用于NETWORK转盘，圆盘单次执行计数;statusvfd->vfd状态指示，1为开
-static int state[6] = {0, 1, 0, 0, 0, 0}; //用于程序切换
-static int runhours = 0, runminutes = 0;  //程序运行时间储存
+static byte p = 0, r = 0, statusvfd = 1, openI = 0; //p,r->用于NETWORK转盘，圆盘单次执行计数;statusvfd->vfd状态指示，1为开;openI->中断标识
+static int state[6] = {0, 1, 0, 0, 0, 0};           //用于程序切换
+static int runhours = 0, runminutes = 0;            //程序运行时间储存
 
 void pt6331_Init(unsigned char dispMode, unsigned char dispCtrl);
 
@@ -189,7 +189,7 @@ void getruntime()
 }
 void openvfd()
 {
-    
+
     for (int i = 0; i < 30000;)
     {
         i++;
@@ -203,9 +203,10 @@ void openvfd()
     {
         digitalWrite(EN_PIN, HIGH);
         statusvfd = 1;
+        openI = 1;
     }
 }
-void closetime()
+void closetime()//定时关闭
 {
     DateTime now = RTC.now();
     int h, m;
@@ -432,6 +433,11 @@ void temper() //温度显示程序
             tworoundstep();
             displayRanBOX();
             closetime();
+            if (openI)
+            {
+                getruntime();
+                openI = 0;
+            }
         }
     }
 }
@@ -464,6 +470,11 @@ void humidity() //湿度显示程序
             tworoundstep();
             displayRanBOX();
             closetime();
+            if (openI)
+            {
+                getruntime();
+                openI = 0;
+            }
         }
     }
 }
@@ -495,6 +506,11 @@ void datas() //日期显示程序
             displayROUNDstep();
             displayRanBOX();
             closetime();
+            if (openI)
+            {
+                getruntime();
+                openI = 0;
+            }
         }
         if (millis() % 5000 == 0)
         {
@@ -531,13 +547,19 @@ void AutoMod() //自动模式
     {
         if (millis() % 1000 == 0)
         {
+            showTIME();
             adc11();
             //showREC(11);
-            showTIME();
+            
             displayNETround();
             displayROUNDstep();
             displayRanBOX();
             closetime();
+            if (openI)
+            {
+                getruntime();
+                openI = 0;
+            }
         }
         if (millis() % 10000 == 0)
         {
@@ -788,6 +810,11 @@ void show() //示例程序->时间显示程序
             displayRanBOX();
             //adc();
             closetime();
+            if (openI)
+            {
+                getruntime();
+                openI = 0;
+            }
         }
     }
 }
