@@ -342,10 +342,13 @@ void getdate() //获得并显示日期
 
 void CHOOSE() //中断程序选择函数
 {
-    for (int i = 0; i < 30000;)
+    
+
+        for (int i = 0; i < 30000;)
     {
         i++;
     }
+
     choosemenu++;
     if (choosemenu > 5)
         choosemenu = 1;
@@ -401,6 +404,10 @@ void CHOOSE() //中断程序选择函数
         state[5] = 1;
     }
     break;
+    }
+            for (int i = 0; i < 30000;)
+    {
+        i++;
     }
 }
 
@@ -777,8 +784,14 @@ void MixNM() //米字与数字乱序显示，间隔30ms，耗时240ms
         diaplayNumber(3, ran3, ON);
         diaplayNumber(4, ran4, ON);
         diaplayNumber(5, ran5, ON);
-        delay(30);
+        delay(25);
     }
+     diaplayNumber(0, 0, ON);
+        diaplayNumber(1, 0, ON);
+        diaplayNumber(2, 0, ON);
+        diaplayNumber(3, 0, ON);
+        diaplayNumber(4, 0, ON);
+        diaplayNumber(5, 0, ON);
 }
 void show() //示例程序->时间显示程序
 {
