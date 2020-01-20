@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>To:XX</title>
+	<script src="js/modernizr.js" type="text/javascript" charset="utf-8"></script>
+
+	<!--[if IE 8]>
+<script src="http://libs.useso.com/js/jquery/1.8.0/jquery.min.js"></script>
+<script>	
+	$(document).ready(function(){
+		$("#contact").addClass("target");
+		$("#flip2back, #close").click(function(e){
+			$(".target").removeClass("target");
+			e.preventDefault();
+		});
+		$("#open, #flip").click(function(e){
+			var $anchor = $(this);
+			$($anchor.attr('href')).addClass("target");
+			e.preventDefault();
+		});
+	});
+</script>
+<![endif]-->
+
+	<link rel="stylesheet" href="stylesheets/style.css" />
+
+	<link href='http://fonts.useso.com/css?family=Satisfy' rel='stylesheet' type='text/css' />
+
+</head>
+
+<body>
+
+	<section class="container" id="contact">
+		<form class="flip">
+			<div class="front">
+				<h2>亲启</h2>
+				<p>13 bis rue Peps</p>
+				<p>75004 Paris France</p>
+				<a id="flip2back" href="#">OPEN</a>
+			</div>
+			<div id="content" class="back">
+				<div id="letter">
+					<div class="container">
+						<div class="flip">
+							<div class="front"></div>
+							<div class="back">
+								&nbsp; Know you, I know there is a kind of mood called attachment, there is a feeling
+								called love.
+								<br /><br />&nbsp;你的过去我不愿过问，那是你的事情；你的未来我希望参与，那是我的荣幸。
+								<br /><br />&nbsp;，做我的女朋友吧！
+								<br /><br />
+								<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&nbsp;&nbsp;--
+
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div id="top">
+					<a id="flip" href="#contact">Flip</a>
+				</div>
+				<div id="lid" class="container">
+					<div class="flip">
+						<div class="front">
+							<div>
+								<label for="name"></label>
+
+							</div>
+							<div>
+								<label for="mail">2019-5-12</label>
+
+							</div>
+							<a id="open" href="#content">Open</a>
+						</div>
+						<div class="back"></div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</section>
+
+</body>
+
+</html>
